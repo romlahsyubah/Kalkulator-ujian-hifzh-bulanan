@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Nilai Ujian Hifzh</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 760px;
+    margin: auto;
+    background: #fff;
+    padding: 22px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+  }
+  h1 { font-size: 22px; margin: 0 0 20px; }
+  h2 { font-size: 17px; margin: 24px 0 12px; }
+  label {
+    display: block;
+    font-weight: 600;
+    margin: 13px 0 6px;
+  }
+  input, select, button {
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+  }
+  input:focus, select:focus {
+    outline: 2px solid #ddd;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  button {
+    margin-top: 18px;
+    cursor: pointer;
+    background: #222;
+    color: white;
+    border: none;
+  }
+  button.secondary {
+    background: #eee;
+    color: #222;
+  }
+  .result {
+    margin-top: 22px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  .result-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .result-item {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 14px;
+    border-radius: 7px;
+  }
+  .result-item small { display: block; margin-bottom: 6px; color: #666; }
+  .result-item strong { font-size: 23px; }
+  details {
+    margin-top: 16px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    padding: 12px;
+    background: white;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .formula {
+    margin-top: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .history {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  th { background: #f3f3f3; }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .actions button { margin-top: 0; }
+  .delete-btn {
+    width: auto;
+    padding: 6px 9px;
+    margin: 0;
+    background: #eee;
+    color: #222;
+  }
+  .empty {
+    color: #666;
+    font-size: 14px;
+    padding: 10px 0;
+  }
+  .note {
+    color: #666;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .hidden { display: none; }
+
+  @media (max-width: 560px) {
+    body { padding: 10px; }
+    .container { padding: 16px; }
+    .row, .result-box { grid-template-columns: 1fr; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Kalkulator Nilai Ujian Hifzh</h1>
+
+  <label for="nama">Nama Santriwati</label>
+  <input id="nama" type="text" placeholder="Masukkan nama">
+
+  <label for="jenis">Jenis Ujian</label>
+  <select id="jenis" onchange="ubahJenis()">
+    <option value="30">Juz 30</option>
+    <option value="lain">Selain Juz 30</option>
+  </select>
+
+  <div class="row">
+    <div>
+      <label for="kesalahan">Jumlah Kesalahan</label>
+      <input id="kesalahan" type="number" min="0" step="1" placeholder="Contoh: 5">
+    </div>
+
+    <div>
+      <label for="halaman">Jumlah Halaman Disetor</label>
+      <input id="halaman" type="number" min="0.01" step="0.01" placeholder="Contoh: 12">
+    </div>
+  </div>
+
+  <div id="juzContainer" class="hidden">
+    <label for="jumlahJuz">Jumlah Juz Disetor</label>
+    <input id="jumlahJuz" type="number" min="0.01" step="0.01" placeholder="Contoh: 2">
+    <div class="note">Dipakai untuk menghitung bobot nilai selain Juz 30.</div>
+  </div>
+
+  <button onclick="hitung()">HITUNG</button>
+
+  <div id="hasil" class="result hidden">
+    <h2>Hasil</h2>
+
+    <div class="result-box">
+      <div class="result-item">
+        <small>Nilai Per Juz</small>
+        <strong id="nilaiJuz">-</strong>
+      </div>
+      <div class="result-item">
+        <small>Bobot Nilai</small>
+        <strong id="bobot">-</strong>
+      </div>
+    </div>
+
+    <details open>
+      <summary>Lihat Rumus Perhitungan</summary>
+      <div id="rumus" class="formula"></div>
+    </details>
+  </div>
+
+  <h2>Riwayat</h2>
+  <div id="history" class="history"></div>
+  <button class="secondary" onclick="hapusSemuaRiwayat()">Hapus Semua Riwayat</button>
+</div>
+
+<script>
+const KEY = "riwayatHifzh";
+
+function ubahJenis() {
+  const selain = document.getElementById("jenis").value === "lain";
+  document.getElementById("juzContainer").classList.toggle("hidden", !selain);
+}
+
+function fmt(n) {
+  return Number(n).toLocaleString("id-ID", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function angka(n) {
+  return Number(n).toLocaleString("id-ID", {
+    maximumFractionDigits: 10
+  });
+}
+
+function hitung() {
+  const nama = document.getElementById("nama").value.trim();
+  const jenis = document.getElementById("jenis").value;
+  const kesalahan = Number(document.getElementById("kesalahan").value);
+  const halaman = Number(document.getElementById("halaman").value);
+  const jumlahJuz = Number(document.getElementById("jumlahJuz").value);
+
+  if (!nama) {
+    alert("Nama santriwati belum diisi.");
+    return;
+  }
+
+  if (!Number.isFinite(kesalahan) || kesalahan < 0) {
+    alert("Jumlah kesalahan belum diisi dengan benar.");
+    return;
+  }
+
+  if (!Number.isFinite(halaman) || halaman <= 0) {
+    alert("Jumlah halaman disetor harus lebih dari 0.");
+    return;
+  }
+
+  let totalHlm, nilai, bobot, rumus;
+
+  if (jenis === "30") {
+    totalHlm = 23;
+
+    nilai = 100 - ((kesalahan * 2 * totalHlm) / halaman);
+    bobot = nilai * (halaman / totalHlm);
+
+    rumus = `
+      <div><b>Nilai Per Juz</b></div>
+      <div>
+        = 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})
+      </div>
+      <div>
+        = 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})
+      </div>
+      <div>
+        = <b>${fmt(nilai)}</b>
+      </div>
+
+      <br>
+
+      <div><b>Bobot Nilai</b></div>
+      <div>
+        = ${fmt(nilai)} × (${angka(halaman)} ÷ 23)
+      </div>
+      <div>
+        = <b>${fmt(bobot)}</b>
+      </div>
+    `;
+  } else {
+    totalHlm = 20;
+
+    if (!Number.isFinite(jumlahJuz) || jumlahJuz <= 0) {
+      alert("Jumlah juz disetor harus lebih dari 0.");
+      return;
+    }
+
+    nilai = 100 - ((kesalahan * 2 * totalHlm) / halaman);
+    bobot = nilai * jumlahJuz;
+
+    rumus = `
+      <div><b>Nilai Per Juz</b></div>
+      <div>
+        = 100 - ((${angka(kesalahan)} × 2 × 20) ÷ ${angka(halaman)})
+      </div>
+      <div>
+        = 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})
+      </div>
+      <div>
+        = <b>${fmt(nilai)}</b>
+      </div>
+
+      <br>
+
+      <div><b>Bobot Nilai</b></div>
+      <div>
+        = ${fmt(nilai)} × ${angka(jumlahJuz)}
+      </div>
+      <div>
+        = <b>${fmt(bobot)}</b>
+      </div>
+    `;
+  }
+
+  document.getElementById("nilaiJuz").textContent = fmt(nilai);
+  document.getElementById("bobot").textContent = fmt(bobot);
+  document.getElementById("rumus").innerHTML = rumus;
+  document.getElementById("hasil").classList.remove("hidden");
+
+  simpanRiwayat({
+    id: Date.now(),
+    waktu: new Date().toLocaleString("id-ID"),
+    nama,
+    jenis: jenis === "30" ? "Juz 30" : "Selain Juz 30",
+    kesalahan,
+    halaman,
+    jumlahJuz: jenis === "lain" ? jumlahJuz : null,
+    nilai,
+    bobot
+  });
+}
+
+function ambilRiwayat() {
+  try {
+    return JSON.parse(localStorage.getItem(KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function simpanRiwayat(data) {
+  const riwayat = ambilRiwayat();
+  riwayat.unshift(data);
+  localStorage.setItem(KEY, JSON.stringify(riwayat));
+  tampilkanRiwayat();
+}
+
+function tampilkanRiwayat() {
+  const riwayat = ambilRiwayat();
+  const el = document.getElementById("history");
+
+  if (!riwayat.length) {
+    el.innerHTML = '<div class="empty">Belum ada riwayat.</div>';
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Ujian</th>
+          <th>Kesalahan</th>
+          <th>Hlm</th>
+          <th>Juz</th>
+          <th>Nilai/Juz</th>
+          <th>Bobot</th>
+          <th>Waktu</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  riwayat.forEach(item => {
+    html += `
+      <tr>
+        <td>${escapeHtml(item.nama)}</td>
+        <td>${item.jenis}</td>
+        <td>${item.kesalahan}</td>
+        <td>${item.halaman}</td>
+        <td>${item.jumlahJuz ?? "-"}</td>
+        <td>${fmt(item.nilai)}</td>
+        <td>${fmt(item.bobot)}</td>
+        <td>${item.waktu}</td>
+        <td>
+          <button class="delete-btn" onclick="hapusRiwayat(${item.id})">×</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+  el.innerHTML = html;
+}
+
+function hapusRiwayat(id) {
+  const riwayat = ambilRiwayat().filter(item => item.id !== id);
+  localStorage.setItem(KEY, JSON.stringify(riwayat));
+  tampilkanRiwayat();
+}
+
+function hapusSemuaRiwayat() {
+  if (!ambilRiwayat().length) return;
+
+  if (confirm("Hapus semua riwayat?")) {
+    localStorage.removeItem(KEY);
+    tampilkanRiwayat();
+  }
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+ubahJenis();
+tampilkanRiwayat();
+</script>
+
+</body>
+</html>
