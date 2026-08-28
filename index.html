@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Nilai Ujian Hifzh</title>
+<title>Kalkulator Nilai Ujian Hifzh Bulanan</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -11,17 +11,17 @@
     background: #f7f7f7;
     color: #222;
     margin: 0;
-    padding: 20px;
+    padding: 18px;
   }
   .container {
-    max-width: 760px;
+    max-width: 720px;
     margin: auto;
     background: #fff;
-    padding: 22px;
+    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 10px;
   }
-  h1 { font-size: 22px; margin: 0 0 20px; }
+  h1 { font-size: 21px; margin: 0 0 20px; }
   h2 { font-size: 17px; margin: 24px 0 12px; }
   label {
     display: block;
@@ -47,12 +47,18 @@
     margin-top: 18px;
     cursor: pointer;
     background: #222;
-    color: white;
+    color: #fff;
     border: none;
   }
   button.secondary {
     background: #eee;
     color: #222;
+  }
+  .hidden { display: none; }
+  .note {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
   }
   .result {
     margin-top: 22px;
@@ -67,19 +73,19 @@
     margin-top: 12px;
   }
   .result-item {
-    background: white;
+    background: #fff;
     border: 1px solid #ddd;
     padding: 14px;
     border-radius: 7px;
   }
   .result-item small { display: block; margin-bottom: 6px; color: #666; }
-  .result-item strong { font-size: 23px; }
+  .result-item strong { font-size: 22px; }
   details {
     margin-top: 16px;
     border: 1px solid #ddd;
     border-radius: 7px;
     padding: 12px;
-    background: white;
+    background: #fff;
   }
   summary {
     cursor: pointer;
@@ -106,12 +112,6 @@
     white-space: nowrap;
   }
   th { background: #f3f3f3; }
-  .actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .actions button { margin-top: 0; }
   .delete-btn {
     width: auto;
     padding: 6px 9px;
@@ -124,25 +124,18 @@
     font-size: 14px;
     padding: 10px 0;
   }
-  .note {
-    color: #666;
-    font-size: 13px;
-    margin-top: 6px;
-  }
-  .hidden { display: none; }
-
   @media (max-width: 560px) {
     body { padding: 10px; }
     .container { padding: 16px; }
     .row, .result-box { grid-template-columns: 1fr; }
-    h1 { font-size: 20px; }
+    h1 { font-size: 19px; }
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Kalkulator Nilai Ujian Hifzh</h1>
+  <h1>Kalkulator Nilai Ujian Hifzh Bulanan</h1>
 
   <label for="nama">Nama Santriwati</label>
   <input id="nama" type="text" placeholder="Masukkan nama">
@@ -150,7 +143,7 @@
   <label for="jenis">Jenis Ujian</label>
   <select id="jenis" onchange="ubahJenis()">
     <option value="30">Juz 30</option>
-    <option value="lain">Selain Juz 30</option>
+    <option value="lebih">Lebih dari 1 Juz</option>
   </select>
 
   <div class="row">
@@ -159,16 +152,17 @@
       <input id="kesalahan" type="number" min="0" step="1" placeholder="Contoh: 5">
     </div>
 
-    <div>
+    <div id="halamanBox">
       <label for="halaman">Jumlah Halaman Disetor</label>
       <input id="halaman" type="number" min="0.01" step="0.01" placeholder="Contoh: 12">
+      <div class="note">Untuk Juz 30, jumlah halaman disetor dapat berbeda-beda.</div>
     </div>
   </div>
 
-  <div id="juzContainer" class="hidden">
-    <label for="jumlahJuz">Jumlah Juz Disetor</label>
-    <input id="jumlahJuz" type="number" min="0.01" step="0.01" placeholder="Contoh: 2">
-    <div class="note">Dipakai untuk menghitung bobot nilai selain Juz 30.</div>
+  <div id="jumlahJuzBox" class="hidden">
+    <label for="jumlahJuz">Jumlah Juz yang Diujikan</label>
+    <input id="jumlahJuz" type="number" min="2" max="5" step="1" placeholder="2–5">
+    <div class="note">Untuk ujian lebih dari 1 juz, maksimal 5 juz.</div>
   </div>
 
   <button onclick="hitung()">HITUNG</button>
@@ -178,8 +172,8 @@
 
     <div class="result-box">
       <div class="result-item">
-        <small>Nilai Per Juz</small>
-        <strong id="nilaiJuz">-</strong>
+        <small id="labelNilai">Nilai Ujian Per Juz</small>
+        <strong id="nilai">-</strong>
       </div>
       <div class="result-item">
         <small>Bobot Nilai</small>
@@ -199,11 +193,15 @@
 </div>
 
 <script>
-const KEY = "riwayatHifzh";
+// @ts-nocheck
+const KEY = "riwayatHifzhBulanan";
 
 function ubahJenis() {
-  const selain = document.getElementById("jenis").value === "lain";
-  document.getElementById("juzContainer").classList.toggle("hidden", !selain);
+  const lebih = document.getElementById("jenis").value === "lebih";
+  document.getElementById("halamanBox").classList.toggle("hidden", lebih);
+  document.getElementById("jumlahJuzBox").classList.toggle("hidden", !lebih);
+  document.getElementById("labelNilai").textContent =
+    lebih ? "Nilai Ujian Bulanan" : "Nilai Ujian Per Juz";
 }
 
 function fmt(n) {
@@ -223,8 +221,6 @@ function hitung() {
   const nama = document.getElementById("nama").value.trim();
   const jenis = document.getElementById("jenis").value;
   const kesalahan = Number(document.getElementById("kesalahan").value);
-  const halaman = Number(document.getElementById("halaman").value);
-  const jumlahJuz = Number(document.getElementById("jumlahJuz").value);
 
   if (!nama) {
     alert("Nama santriwati belum diisi.");
@@ -236,77 +232,63 @@ function hitung() {
     return;
   }
 
-  if (!Number.isFinite(halaman) || halaman <= 0) {
-    alert("Jumlah halaman disetor harus lebih dari 0.");
-    return;
-  }
-
-  let totalHlm, nilai, bobot, rumus;
+  let nilai, bobot, rumus, halaman = null, jumlahJuz = null;
 
   if (jenis === "30") {
-    totalHlm = 23;
+    halaman = Number(document.getElementById("halaman").value);
+
+    if (!Number.isFinite(halaman) || halaman <= 0) {
+      alert("Jumlah halaman disetor harus lebih dari 0.");
+      return;
+    }
+
+    const totalHlm = 23;
 
     nilai = 100 - ((kesalahan * 2 * totalHlm) / halaman);
     bobot = nilai * (halaman / totalHlm);
 
     rumus = `
-      <div><b>Nilai Per Juz</b></div>
-      <div>
-        = 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})
-      </div>
-      <div>
-        = 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})
-      </div>
-      <div>
-        = <b>${fmt(nilai)}</b>
-      </div>
+      <div><b>Nilai Ujian Per Juz</b></div>
+      <div>= 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})</div>
+      <div>= 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})</div>
+      <div>= <b>${fmt(nilai)}</b></div>
 
       <br>
 
       <div><b>Bobot Nilai</b></div>
-      <div>
-        = ${fmt(nilai)} × (${angka(halaman)} ÷ 23)
-      </div>
-      <div>
-        = <b>${fmt(bobot)}</b>
-      </div>
+      <div>= ${fmt(nilai)} × (${angka(halaman)} ÷ 23)</div>
+      <div>= <b>${fmt(bobot)}</b></div>
     `;
   } else {
-    totalHlm = 20;
+    jumlahJuz = Number(document.getElementById("jumlahJuz").value);
 
-    if (!Number.isFinite(jumlahJuz) || jumlahJuz <= 0) {
-      alert("Jumlah juz disetor harus lebih dari 0.");
+    if (!Number.isInteger(jumlahJuz) || jumlahJuz < 2 || jumlahJuz > 5) {
+      alert("Jumlah juz yang diujikan harus 2 sampai 5 juz.");
       return;
     }
 
-    nilai = 100 - ((kesalahan * 2 * totalHlm) / halaman);
+    const totalHlmUjian = 20;
+
+    // Karena materi yang diujikan adalah 20 halaman per juz,
+    // penyebut pada rumus tetap 20. Tidak perlu diinput manual.
+    nilai = 100 - ((kesalahan * 2 * totalHlmUjian) / totalHlmUjian);
     bobot = nilai * jumlahJuz;
 
     rumus = `
-      <div><b>Nilai Per Juz</b></div>
-      <div>
-        = 100 - ((${angka(kesalahan)} × 2 × 20) ÷ ${angka(halaman)})
-      </div>
-      <div>
-        = 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})
-      </div>
-      <div>
-        = <b>${fmt(nilai)}</b>
-      </div>
+      <div><b>Nilai Ujian Bulanan</b></div>
+      <div>= 100 - ((${angka(kesalahan)} × 2 × 20) ÷ 20)</div>
+      <div>= 100 - (${angka(kesalahan * 2 * totalHlmUjian)} ÷ 20)</div>
+      <div>= <b>${fmt(nilai)}</b></div>
 
       <br>
 
       <div><b>Bobot Nilai</b></div>
-      <div>
-        = ${fmt(nilai)} × ${angka(jumlahJuz)}
-      </div>
-      <div>
-        = <b>${fmt(bobot)}</b>
-      </div>
+      <div>= ${fmt(nilai)} × ${angka(jumlahJuz)}</div>
+      <div>= <b>${fmt(bobot)}</b></div>
     `;
   }
 
-  document.getElementById("nilaiJuz").textContent = fmt(nilai);
+  document.getElementById("nilai").textContent = fmt(nilai);
   document.getElementById("bobot").textContent = fmt(bobot);
   document.getElementById("rumus").innerHTML = rumus;
   document.getElementById("hasil").classList.remove("hidden");
@@ -315,10 +297,10 @@ function hitung() {
     id: Date.now(),
     waktu: new Date().toLocaleString("id-ID"),
     nama,
-    jenis: jenis === "30" ? "Juz 30" : "Selain Juz 30",
+    jenis: jenis === "30" ? "Juz 30" : "Lebih dari 1 Juz",
     kesalahan,
     halaman,
-    jumlahJuz: jenis === "lain" ? jumlahJuz : null,
+    jumlahJuz,
     nilai,
     bobot
   });
@@ -357,7 +339,7 @@ function tampilkanRiwayat() {
           <th>Kesalahan</th>
           <th>Hlm</th>
           <th>Juz</th>
-          <th>Nilai/Juz</th>
+          <th>Nilai</th>
           <th>Bobot</th>
           <th>Waktu</th>
           <th></th>
@@ -372,14 +354,12 @@ function tampilkanRiwayat() {
         <td>${escapeHtml(item.nama)}</td>
         <td>${item.jenis}</td>
         <td>${item.kesalahan}</td>
-        <td>${item.halaman}</td>
+        <td>${item.halaman ?? "-"}</td>
         <td>${item.jumlahJuz ?? "-"}</td>
         <td>${fmt(item.nilai)}</td>
         <td>${fmt(item.bobot)}</td>
-        <td>${item.waktu}</td>
-        <td>
-          <button class="delete-btn" onclick="hapusRiwayat(${item.id})">×</button>
-        </td>
+        <td>${escapeHtml(item.waktu)}</td>
+        <td><button class="delete-btn" onclick="hapusRiwayat(${item.id})">×</button></td>
       </tr>
     `;
   });
