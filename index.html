@@ -1,400 +1,2336 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Nilai Ujian Hifzh Bulanan</title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: Arial, sans-serif;
-    background: #f7f7f7;
-    color: #222;
-    margin: 0;
-    padding: 18px;
-  }
-  .container {
-    max-width: 720px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-  }
-  h1 { font-size: 21px; margin: 0 0 20px; }
-  h2 { font-size: 17px; margin: 24px 0 12px; }
-  label {
-    display: block;
-    font-weight: 600;
-    margin: 13px 0 6px;
-  }
-  input, select, button {
-    width: 100%;
-    padding: 11px;
-    font-size: 15px;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-  }
-  input:focus, select:focus {
-    outline: 2px solid #ddd;
-  }
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  button {
-    margin-top: 18px;
-    cursor: pointer;
-    background: #222;
-    color: #fff;
-    border: none;
-  }
-  button.secondary {
-    background: #eee;
-    color: #222;
-  }
-  .hidden { display: none; }
-  .note {
-    color: #666;
-    font-size: 13px;
-    margin-top: 5px;
-  }
-  .result {
-    margin-top: 22px;
-    padding: 16px;
-    background: #f5f5f5;
-    border-radius: 8px;
-  }
-  .result-box {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 12px;
-  }
-  .result-item {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 14px;
-    border-radius: 7px;
-  }
-  .result-item small { display: block; margin-bottom: 6px; color: #666; }
-  .result-item strong { font-size: 22px; }
-  details {
-    margin-top: 16px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    padding: 12px;
-    background: #fff;
-  }
-  summary {
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .formula {
-    margin-top: 12px;
-    line-height: 1.8;
-    overflow-wrap: anywhere;
-  }
-  .history {
-    overflow-x: auto;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin-top: 10px;
-  }
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    white-space: nowrap;
-  }
-  th { background: #f3f3f3; }
-  .delete-btn {
-    width: auto;
-    padding: 6px 9px;
-    margin: 0;
-    background: #eee;
-    color: #222;
-  }
-  .empty {
-    color: #666;
-    font-size: 14px;
-    padding: 10px 0;
-  }
-  @media (max-width: 560px) {
-    body { padding: 10px; }
-    .container { padding: 16px; }
-    .row, .result-box { grid-template-columns: 1fr; }
-    h1 { font-size: 19px; }
-  }
-</style>
-</head>
-<body>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4f7659">
+  <meta name="description" content="Kalkulator Nilai Ujian Hifzh untuk ujian bulanan dan semester.">
+  <title>Kalkulator Nilai Ujian Hifzh</title>  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
 
-<div class="container">
-  <h1>Kalkulator Nilai Ujian Hifzh Bulanan</h1>
+    :root {
+      --green: #4f7659;
+      --green-dark: #3d6047;
+      --green-deep: #31513a;
+      --green-soft: #edf4ee;
+      --green-border: #d3e1d5;
+      --cream: #fffdf9;
+      --bg: #f4f3ef;
+      --text: #30332f;
+      --muted: #777b76;
+      --border: #dedfd9;
+      --white: #ffffff;
+      --danger: #a55b5b;
+      --shadow: 0 10px 32px rgba(49, 81, 58, 0.09);
 
-  <label for="nama">Nama Santriwati</label>
-  <input id="nama" type="text" placeholder="Masukkan nama">
+      --font-latin:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        "Helvetica Neue",
+        "Segoe UI",
+        Arial,
+        sans-serif;
 
-  <label for="jenis">Jenis Ujian</label>
-  <select id="jenis" onchange="ubahJenis()">
-    <option value="30">Juz 30</option>
-    <option value="lebih">Lebih dari 1 Juz</option>
-  </select>
+      --font-arabic:
+        "SF Arabic",
+        "San Francisco Arabic",
+        "Noto Sans Arabic",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    }
 
-  <div class="row">
-    <div>
-      <label for="kesalahan">Jumlah Kesalahan</label>
-      <input id="kesalahan" type="number" min="0" step="1" placeholder="Contoh: 5">
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 18px;
+      background:
+        radial-gradient(
+          circle at 10% 0%,
+          rgba(196, 215, 199, 0.38),
+          transparent 30%
+        ),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font-latin);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      width: min(100%, 720px);
+      margin: 0 auto;
+    }
+
+    .app-card {
+      background: rgba(255, 255, 255, 0.97);
+      border: 1px solid rgba(222, 223, 217, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    .header {
+      text-align: center;
+      margin-bottom: 27px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--green-deep);
+      font-size: clamp(24px, 5vw, 29px);
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    /* =========================
+       FORM
+    ========================== */
+
+    .field {
+      margin-top: 17px;
+    }
+
+    .field:first-child {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #3e433e;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 47px;
+      padding: 10px 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--white);
+      color: var(--text);
+      outline: none;
+      appearance: auto;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #a2a6a1;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(79, 118, 89, 0.12);
+    }
+
+    .form-area {
+      margin-top: 21px;
+    }
+
+    .dynamic-form {
+      animation: formIn 0.25s ease;
+    }
+
+    @keyframes formIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .calculate-button {
+      width: 100%;
+      min-height: 49px;
+      margin-top: 24px;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(61, 96, 71, 0.2);
+      transition:
+        background 0.18s ease,
+        transform 0.15s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .calculate-button:hover {
+      background: var(--green-dark);
+      box-shadow: 0 8px 18px rgba(61, 96, 71, 0.25);
+    }
+
+    .calculate-button:active {
+      transform: translateY(1px);
+    }
+
+    /* =========================
+       HASIL
+    ========================== */
+
+    .result {
+      margin-top: 28px;
+      padding: 18px;
+      border: 1px solid var(--green-border);
+      border-radius: 15px;
+      background: var(--green-soft);
+      animation: resultIn 0.3s ease;
+    }
+
+    @keyframes resultIn {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-title {
+      margin: 0 0 14px;
+      color: var(--green-dark);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .result-item {
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid #dbe5dc;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .result-item small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .result-item strong {
+      display: block;
+      color: var(--green-deep);
+      font-size: clamp(23px, 6vw, 29px);
+      line-height: 1.2;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    /* =========================
+       RUMUS
+    ========================== */
+
+    details {
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid #dbe5dc;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    summary {
+      padding: 12px 14px;
+      cursor: pointer;
+      color: #475149;
+      font-size: 13px;
+      font-weight: 650;
+      user-select: none;
+    }
+
+    .formula {
+      padding: 0 14px 15px;
+      color: #4d534e;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .formula-title {
+      margin-top: 8px;
+      color: var(--green-dark);
+      font-weight: 700;
+    }
+
+    .formula-result {
+      color: var(--green-deep);
+      font-weight: 700;
+    }
+
+    /* =========================
+   TEKS PENYEMANGAT
+========================= */
+
+.encouragement {
+  position: relative;
+  min-height: 112px;
+  margin: 26px 2px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Ornamen atas dan bawah */
+.encouragement::before,
+.encouragement::after {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(
+    to right,
+    transparent,
+    #c9d8cb 18%,
+    #c9d8cb 82%,
+    transparent
+  );
+}
+
+.encouragement::before {
+  top: 7px;
+}
+
+.encouragement::after {
+  bottom: 7px;
+}
+
+/* Ornamen kecil di tengah garis */
+.encouragement-inner::before,
+.encouragement-inner::after {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  content: "";
+  background: #a9beaD;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 1px;
+}
+
+.encouragement-inner::before {
+  top: -2px;
+}
+
+.encouragement-inner::after {
+  bottom: -2px;
+}
+
+.encouragement-inner {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 570px);
+  padding: 18px 22px;
+}
+
+/*
+  Teks dan emoji sekarang berada
+  dalam satu inline flow.
+
+  Jadi ketika teks menjadi 2 baris,
+  emoji tetap menyatu dengan kalimat.
+*/
+.encouragement-text {
+  display: block;
+  color: #607664;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.75;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.encouragement-text.fade-out {
+  opacity: 0;
+}
+
+.encouragement-text.fade-in {
+  animation: encouragementIn 0.8s ease;
+}
+
+.encouragement-text.rtl {
+  direction: rtl;
+  font-family:
+    "SF Arabic",
+    "San Francisco Arabic",
+    "Noto Sans Arabic",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+.encouragement-text.ltr {
+  direction: ltr;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Helvetica Neue",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+/*
+  Emoji sengaja INLINE, bukan flex item.
+  Dengan begitu emoji ikut mengalir bersama
+  teks ketika kalimat turun ke baris berikutnya.
+*/
+.encouragement-emoji {
+  display: inline;
+  margin-inline-start: 4px;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI Emoji",
+    "Apple Color Emoji",
+    sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@keyframes encouragementIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+    /* =========================
+       RIWAYAT
+    ========================== */
+
+    .history-section {
+      margin-top: 30px;
+      padding-top: 23px;
+      border-top: 1px solid var(--border);
+    }
+
+    .history-heading {
+      margin: 0 0 12px;
+      color: var(--green-dark);
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .history {
+      overflow-x: auto;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 790px;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 9px 8px;
+      border: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #eef3ee;
+      color: #505850;
+      font-weight: 700;
+    }
+
+    td {
+      color: #515650;
+    }
+
+    .delete-btn {
+      width: auto;
+      min-width: 32px;
+      min-height: 30px;
+      margin: 0;
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      background: #f7f7f5;
+      color: #777;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      color: var(--danger);
+      background: #f3e8e8;
+    }
+
+    .empty {
+      padding: 16px 8px;
+      border-radius: 10px;
+      background: #fafaf8;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .clear-history {
+      width: 100%;
+      min-height: 43px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border: 1px solid #dcded9;
+      border-radius: 10px;
+      background: #fafaf8;
+      color: #666b66;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.18s ease;
+    }
+
+    .clear-history:hover {
+      background: #f1f1ed;
+    }
+
+    /* =========================
+       SIGNATURE
+    ========================== */
+
+    .signature {
+  margin-top: 21px;
+  color: #7f8d81;
+  font-family:
+    "Biro Script Plus",
+    "Biro Script Plus Bold",
+    "Biro Script",
+    "Segoe Script",
+    "Bradley Hand",
+    cursive;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-align: center;
+      }
+
+    .footer-note {
+      margin-top: 7px;
+      color: #a0a39e;
+      font-size: 10.5px;
+      text-align: center;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 560px) {
+      body {
+        padding: 10px;
+      }
+
+      .app-card {
+        padding: 18px;
+        border-radius: 17px;
+      }
+
+      .result-box {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        margin-bottom: 23px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+
+      .encouragement {
+  min-height: 118px;
+}
+
+.encouragement-inner {
+  width: 100%;
+  padding: 19px 16px;
+}
+
+.encouragement::before,
+.encouragement::after {
+  left: 9%;
+  right: 9%;
+}
+
+.encouragement-text {
+  font-size: 13px;
+  line-height: 1.75;
+}
+    }
+  </style></head><body>  <main class="container">
+    <div class="app-card">  <!-- HEADER -->
+  <header class="header">
+    <h1>Kalkulator Nilai Ujian Hifzh</h1>
+    <p class="subtitle">
+      Biar hitung-hitungan nggak ikut bikin pusing hihi..
+    </p>
+  </header>
+
+  <!-- DATA DASAR -->
+  <section>
+    <div class="field">
+      <label for="nama">Nama Santriwati</label>
+      <input
+        id="nama"
+        type="text"
+        autocomplete="name"
+        placeholder="Masukkan nama santriwati"
+      >
     </div>
 
-    <div id="halamanBox">
-      <label for="halaman">Jumlah Halaman Disetor</label>
-      <input id="halaman" type="number" min="0.01" step="0.01" placeholder="Contoh: 12">
-      <div class="note">Untuk Juz 30, jumlah halaman disetor dapat berbeda-beda.</div>
+    <div class="field">
+      <label for="jenis">Mau hitung ujian yang mana?</label>
+      <select id="jenis">
+        <option value="">Pilih jenis ujian</option>
+        <option value="bulanan">Ujian Bulanan</option>
+        <option value="semester">Ujian Semester</option>
+      </select>
     </div>
-  </div>
+  </section>
 
-  <div id="jumlahJuzBox" class="hidden">
-    <label for="jumlahJuz">Jumlah Juz yang Diujikan</label>
-    <input id="jumlahJuz" type="number" min="2" max="5" step="1" placeholder="2–5">
-    <div class="note">Untuk ujian lebih dari 1 juz, maksimal 5 juz.</div>
-  </div>
+  <!-- FORM DINAMIS -->
+  <section id="dynamicForm" class="form-area dynamic-form hidden"></section>
 
-  <button onclick="hitung()">HITUNG</button>
+  <!-- TOMBOL -->
+  <button
+    id="hitungBtn"
+    class="calculate-button hidden"
+    type="button"
+  >
+    Hitung Nilainya ✨
+  </button>
 
-  <div id="hasil" class="result hidden">
-    <h2>Hasil</h2>
+  <!-- HASIL -->
+  <section
+    id="hasil"
+    class="result hidden"
+    aria-live="polite"
+  >
+    <h2 class="result-title">Hasilnya nih 👇</h2>
 
     <div class="result-box">
       <div class="result-item">
         <small id="labelNilai">Nilai Ujian Per Juz</small>
         <strong id="nilai">-</strong>
       </div>
-      <div class="result-item">
+
+      <div id="bobotItem" class="result-item">
         <small>Bobot Nilai</small>
         <strong id="bobot">-</strong>
       </div>
     </div>
 
-    <details open>
-      <summary>Lihat Rumus Perhitungan</summary>
+    <details>
+      <summary>Mau cek hitungannya? 👀</summary>
       <div id="rumus" class="formula"></div>
     </details>
+  </section>
+
+  <!-- TEKS PENYEMANGAT -->
+  <section
+    class="encouragement"
+    aria-live="polite"
+    aria-label="Pesan penyemangat"
+  >
+    <span class="encouragement-decoration left" aria-hidden="true"></span>
+
+    <div class="encouragement-inner">
+      <div id="encouragementText" class="encouragement-text"></div>
+    </div>
+
+    <span class="encouragement-decoration right" aria-hidden="true"></span>
+  </section>
+
+  <!-- RIWAYAT -->
+  <section class="history-section">
+    <h2 class="history-heading">Riwayat</h2>
+
+    <div id="history" class="history"></div>
+
+    <button
+      id="hapusSemuaBtn"
+      class="clear-history"
+      type="button"
+    >
+      Hapus Semua Riwayat
+    </button>
+  </section>
+
+  <!-- SIGNATURE -->
+  <div class="signature">by Romlah</div>
+
+  <div class="footer-note">
+    Data riwayat tersimpan di perangkat ini.
   </div>
 
-  <h2>Riwayat</h2>
-  <div id="history" class="history"></div>
-  <button class="secondary" onclick="hapusSemuaRiwayat()">Hapus Semua Riwayat</button>
 </div>
 
-<script>
-// @ts-nocheck
-const KEY = "riwayatHifzhBulanan";
+  </main>  <script>
+    "use strict";
 
-function ubahJenis() {
-  const lebih = document.getElementById("jenis").value === "lebih";
-  document.getElementById("halamanBox").classList.toggle("hidden", lebih);
-  document.getElementById("jumlahJuzBox").classList.toggle("hidden", !lebih);
-  document.getElementById("labelNilai").textContent =
-    lebih ? "Nilai Ujian Bulanan" : "Nilai Ujian Per Juz";
-}
+    /*
+      ==========================================
+      KALKULATOR NILAI UJIAN HIFZH
+      ==========================================
+    */
 
-function fmt(n) {
-  return Number(n).toLocaleString("id-ID", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
+    const STORAGE_KEY = "riwayatHifzh";
+    const OLD_STORAGE_KEY = "riwayatHifzhBulanan";
 
-function angka(n) {
-  return Number(n).toLocaleString("id-ID", {
-    maximumFractionDigits: 10
-  });
-}
+    const state = {
+      formVersion: 0,
+      encouragementIndex: 0,
+      encouragementTimer: null
+    };
 
-function hitung() {
-  const nama = document.getElementById("nama").value.trim();
-  const jenis = document.getElementById("jenis").value;
-  const kesalahan = Number(document.getElementById("kesalahan").value);
+    /*
+      Emoji sengaja dipisahkan dari teks.
+      Untuk bahasa Arab digunakan direction RTL
+      agar emoji tetap berada di ujung visual kalimat.
+    */
+    const encouragements = [
+      {
+        text: "ما أجمل تفانيك، وما أروع بذلك، شكر الله سعيك",
+        emoji: "🍄",
+        direction: "rtl"
+      },
+      {
+        text: "جزاك الله الدرجات العلى من الجنة",
+        emoji: "🌻",
+        direction: "rtl"
+      },
+      {
+        text: "Terima kasih sudah menjadi bagian dari proses belajar mereka",
+        emoji: "🤍",
+        direction: "ltr"
+      },
+      {
+        text: "Satu per satu, insyaAllah selesai juga",
+        emoji: "🌹",
+        direction: "ltr"
+      },
+      {
+        text: "سقى الله قلبك غيثا من السعادة",
+        emoji: "🎈",
+        direction: "rtl"
+      },
+      {
+        text: "Semoga dimudahkan dalam setiap penilaian",
+        emoji: "💐",
+        direction: "ltr"
+      },
+      {
+        text: "Semoga setiap lelah menjadi pahala di sisi Allah",
+        emoji: "🤲",
+        direction: "ltr"
+      },
+      {
+        text: "Pelan-pelan, yang penting teliti dan tetap semangat",
+        emoji: "🌿",
+        direction: "ltr"
+      },
+      {
+        text: "Semoga ini menjadi amal yang terus mengalir hingga anak² dewasa, aamiin.",
+        emoji: "🌸",
+        direction: "ltr"
+      },
+      {
+        text: "كتب الله أجرك وبارك في عملك",
+        emoji: "🌸",
+        direction: "rtl"
+      }
+    ];
 
-  if (!nama) {
-    alert("Nama santriwati belum diisi.");
-    return;
-  }
+    const els = {
+      nama: document.getElementById("nama"),
+      jenis: document.getElementById("jenis"),
+      dynamicForm: document.getElementById("dynamicForm"),
+      hitungBtn: document.getElementById("hitungBtn"),
+      hasil: document.getElementById("hasil"),
+      labelNilai: document.getElementById("labelNilai"),
+      nilai: document.getElementById("nilai"),
+      bobotItem: document.getElementById("bobotItem"),
+      bobot: document.getElementById("bobot"),
+      rumus: document.getElementById("rumus"),
+      history: document.getElementById("history"),
+      hapusSemuaBtn: document.getElementById("hapusSemuaBtn"),
+      encouragementText: document.getElementById("encouragementText")
+    };
 
-  if (!Number.isFinite(kesalahan) || kesalahan < 0) {
-    alert("Jumlah kesalahan belum diisi dengan benar.");
-    return;
-  }
+    /*
+      ==========================================
+      FORMAT ANGKA
+      ==========================================
+    */
 
-  let nilai, bobot, rumus, halaman = null, jumlahJuz = null;
-
-  if (jenis === "30") {
-    halaman = Number(document.getElementById("halaman").value);
-
-    if (!Number.isFinite(halaman) || halaman <= 0) {
-      alert("Jumlah halaman disetor harus lebih dari 0.");
-      return;
+    function fmt(value) {
+      return Number(value).toLocaleString("id-ID", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
-    const totalHlm = 23;
-
-    nilai = 100 - ((kesalahan * 2 * totalHlm) / halaman);
-    bobot = nilai * (halaman / totalHlm);
-
-    rumus = `
-      <div><b>Nilai Ujian Per Juz</b></div>
-      <div>= 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})</div>
-      <div>= 100 - (${angka(kesalahan * 2 * totalHlm)} ÷ ${angka(halaman)})</div>
-      <div>= <b>${fmt(nilai)}</b></div>
-
-      <br>
-
-      <div><b>Bobot Nilai</b></div>
-      <div>= ${fmt(nilai)} × (${angka(halaman)} ÷ 23)</div>
-      <div>= <b>${fmt(bobot)}</b></div>
-    `;
-  } else {
-    jumlahJuz = Number(document.getElementById("jumlahJuz").value);
-
-    if (!Number.isInteger(jumlahJuz) || jumlahJuz < 2 || jumlahJuz > 5) {
-      alert("Jumlah juz yang diujikan harus 2 sampai 5 juz.");
-      return;
+    function angka(value) {
+      return Number(value).toLocaleString("id-ID", {
+        maximumFractionDigits: 10
+      });
     }
 
-    const totalHlmUjian = 20;
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-    // Karena materi yang diujikan adalah 20 halaman per juz,
-    // penyebut pada rumus tetap 20. Tidak perlu diinput manual.
-    nilai = 100 - ((kesalahan * 2 * totalHlmUjian) / totalHlmUjian);
-    bobot = nilai * jumlahJuz;
+    function getNumber(id) {
+      const element = document.getElementById(id);
 
-    rumus = `
-      <div><b>Nilai Ujian Bulanan</b></div>
-      <div>= 100 - ((${angka(kesalahan)} × 2 × 20) ÷ 20)</div>
-      <div>= 100 - (${angka(kesalahan * 2 * totalHlmUjian)} ÷ 20)</div>
-      <div>= <b>${fmt(nilai)}</b></div>
+      if (!element) {
+        return NaN;
+      }
 
-      <br>
+      return Number(element.value);
+    }
 
-      <div><b>Bobot Nilai</b></div>
-      <div>= ${fmt(nilai)} × ${angka(jumlahJuz)}</div>
-      <div>= <b>${fmt(bobot)}</b></div>
-    `;
-  }
+    /*
+      ==========================================
+      HTML FIELD HELPERS
+      ==========================================
+    */
 
-  document.getElementById("nilai").textContent = fmt(nilai);
-  document.getElementById("bobot").textContent = fmt(bobot);
-  document.getElementById("rumus").innerHTML = rumus;
-  document.getElementById("hasil").classList.remove("hidden");
+    function fieldHtml({
+      id,
+      label,
+      type = "number",
+      min = "",
+      max = "",
+      step = "1",
+      placeholder = "",
+      note = ""
+    }) {
+      const minAttr = min !== "" ? ` min="${min}"` : "";
+      const maxAttr = max !== "" ? ` max="${max}"` : "";
+      const stepAttr = step !== "" ? ` step="${step}"` : "";
 
-  simpanRiwayat({
-    id: Date.now(),
-    waktu: new Date().toLocaleString("id-ID"),
-    nama,
-    jenis: jenis === "30" ? "Juz 30" : "Lebih dari 1 Juz",
-    kesalahan,
-    halaman,
-    jumlahJuz,
-    nilai,
-    bobot
-  });
-}
+      return `
+        <div class="field">
+          <label for="${id}">${label}</label>
 
-function ambilRiwayat() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY)) || [];
-  } catch {
-    return [];
-  }
-}
+          <input
+            id="${id}"
+            type="${type}"
+            ${minAttr}
+            ${maxAttr}
+            ${stepAttr}
+            placeholder="${placeholder}"
+            ${type === "number" ? 'inputmode="decimal"' : ""}
+          >
 
-function simpanRiwayat(data) {
-  const riwayat = ambilRiwayat();
-  riwayat.unshift(data);
-  localStorage.setItem(KEY, JSON.stringify(riwayat));
-  tampilkanRiwayat();
-}
+          ${
+            note
+              ? `<div class="note">${note}</div>`
+              : ""
+          }
+        </div>
+      `;
+    }
 
-function tampilkanRiwayat() {
-  const riwayat = ambilRiwayat();
-  const el = document.getElementById("history");
+    function selectHtml({
+      id,
+      label,
+      options
+    }) {
+      return `
+        <div class="field">
+          <label for="${id}">${label}</label>
 
-  if (!riwayat.length) {
-    el.innerHTML = '<div class="empty">Belum ada riwayat.</div>';
-    return;
-  }
+          <select id="${id}">
+            <option value="">Pilih...</option>
 
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>Nama</th>
-          <th>Ujian</th>
-          <th>Kesalahan</th>
-          <th>Hlm</th>
-          <th>Juz</th>
-          <th>Nilai</th>
-          <th>Bobot</th>
-          <th>Waktu</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
+            ${options.map(option => `
+              <option value="${option.value}">
+                ${option.label}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      `;
+    }
+
+    /*
+      ==========================================
+      HASIL
+      ==========================================
+    */
+
+    function resetResult() {
+      els.hasil.classList.add("hidden");
+      els.nilai.textContent = "-";
+      els.bobot.textContent = "-";
+      els.rumus.innerHTML = "";
+    }
+
+    function showCalculateButton(show) {
+      els.hitungBtn.classList.toggle("hidden", !show);
+    }
+
+    function tampilkanHasil({
+      labelNilai,
+      nilai,
+      bobot,
+      rumus
+    }) {
+      els.labelNilai.textContent = labelNilai;
+      els.nilai.textContent = fmt(nilai);
+      els.rumus.innerHTML = rumus;
+
+      const adaBobot = Number.isFinite(bobot);
+
+      els.bobotItem.classList.toggle(
+        "hidden",
+        !adaBobot
+      );
+
+      els.bobot.textContent =
+        adaBobot
+          ? fmt(bobot)
+          : "-";
+
+      els.hasil.classList.remove("hidden");
+
+      requestAnimationFrame(() => {
+        els.hasil.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
+      });
+    }
+
+    /*
+     
+      ==========================================
+      RENDER FORM UTAMA
+      ==========================================
+    */
+
+    function renderForm() {
+      const jenis = els.jenis.value;
+
+      state.formVersion += 1;
+
+      const currentVersion = state.formVersion;
+
+      resetResult();
+
+      if (!jenis) {
+        els.dynamicForm.innerHTML = "";
+        els.dynamicForm.classList.add("hidden");
+        showCalculateButton(false);
+        return;
+      }
+
+      els.dynamicForm.classList.remove("hidden");
+      showCalculateButton(true);
+
+      /*
+        UJIAN BULANAN
+      */
+
+      if (jenis === "bulanan") {
+        els.dynamicForm.innerHTML = `
+          ${selectHtml({
+            id: "materiBulanan",
+            label: "Materinya apa?",
+            options: [
+              {
+                value: "30",
+                label: "Juz 30"
+              },
+              {
+                value: "lebih",
+                label: "Lebih dari 1 Juz"
+              }
+            ]
+          })}
+
+          <div id="bulananDetail"></div>
+        `;
+
+        const materiBulanan =
+          document.getElementById("materiBulanan");
+
+        materiBulanan.addEventListener(
+          "change",
+          () => {
+            if (currentVersion !== state.formVersion) {
+              return;
+            }
+
+            renderBulananDetail();
+          }
+        );
+
+        renderBulananDetail();
+        return;
+      }
+
+      /*
+        UJIAN SEMESTER
+      */
+
+      els.dynamicForm.innerHTML = `
+        ${selectHtml({
+          id: "semesterGenap",
+          label: "Materinya sudah genap 1 juz?",
+          options: [
+            {
+              value: "genap",
+              label: "Genap 1 Juz"
+            },
+            {
+              value: "belum",
+              label: "Belum Genap 1 Juz"
+            }
+          ]
+        })}
+
+        <div id="semesterDetail"></div>
+      `;
+
+      const semesterGenap =
+        document.getElementById("semesterGenap");
+
+      semesterGenap.addEventListener(
+        "change",
+        () => {
+          if (currentVersion !== state.formVersion) {
+            return;
+          }
+
+          renderSemesterDetail();
+        }
+      );
+
+      renderSemesterDetail();
+    }
+
+    /*
+      ==========================================
+      BULANAN
+      ==========================================
+    */
+
+    function renderBulananDetail() {
+      const materi =
+        document.getElementById("materiBulanan");
+
+      const detail =
+        document.getElementById("bulananDetail");
+
+      if (!materi || !detail) {
+        return;
+      }
+
+      resetResult();
+
+      /*
+        BULANAN → JUZ 30
+      */
+
+      if (materi.value === "30") {
+        detail.innerHTML = `
+          ${fieldHtml({
+            id: "kesalahan",
+            label: "Ada berapa kesalahan?",
+            min: "0",
+            step: "1",
+            placeholder: "Contoh: 5"
+          })}
+
+          ${fieldHtml({
+            id: "halaman",
+            label: "Berapa halaman yang disetor?",
+            min: "0.01",
+            step: "0.01",
+            placeholder: "Contoh: 12",
+            note:
+              "Angka 23 halaman otomatis digunakan dalam perhitungan."
+          })}
+        `;
+
+        return;
+      }
+
+      /*
+        BULANAN → LEBIH DARI 1 JUZ
+      */
+
+      if (materi.value === "lebih") {
+        detail.innerHTML = `
+          ${fieldHtml({
+            id: "kesalahan",
+            label: "Ada berapa kesalahan?",
+            min: "0",
+            step: "1",
+            placeholder: "Contoh: 5"
+          })}
+
+          ${fieldHtml({
+            id: "jumlahJuz",
+            label: "Berapa juz yang diujikan?",
+            min: "1",
+            max: "5",
+            step: "1",
+            placeholder: "1–5",
+            note:
+              "Jumlah juz yang diujikan dibatasi 1–5 juz."
+          })}
+        `;
+
+        return;
+      }
+
+      detail.innerHTML = "";
+    }
+
+    /*
+      ==========================================
+      SEMESTER
+      ==========================================
+    */
+
+    function renderSemesterDetail() {
+      const genap =
+        document.getElementById("semesterGenap");
+
+      const detail =
+        document.getElementById("semesterDetail");
+
+      if (!genap || !detail) {
+        return;
+      }
+
+      resetResult();
+
+      /*
+        SEMESTER → GENAP 1 JUZ
+      */
+
+      if (genap.value === "genap") {
+        detail.innerHTML = `
+          ${fieldHtml({
+            id: "kesalahan",
+            label: "Ada berapa kesalahan?",
+            min: "0",
+            step: "1",
+            placeholder: "Contoh: 5"
+          })}
+        `;
+
+        return;
+      }
+
+      /*
+        SEMESTER → BELUM GENAP
+      */
+
+      if (genap.value === "belum") {
+        detail.innerHTML = `
+          ${selectHtml({
+            id: "materiSemester",
+            label: "Materinya apa?",
+            options: [
+              {
+                value: "30",
+                label: "Juz 30"
+              },
+              {
+                value: "selain30",
+                label: "Selain Juz 30"
+              }
+            ]
+          })}
+
+          <div id="semesterMateriDetail"></div>
+        `;
+
+        const materiSemester =
+          document.getElementById("materiSemester");
+
+        materiSemester.addEventListener(
+          "change",
+          renderSemesterMateriDetail
+        );
+
+        renderSemesterMateriDetail();
+
+        return;
+      }
+
+      detail.innerHTML = "";
+    }
+
+    function renderSemesterMateriDetail() {
+      const materi =
+        document.getElementById("materiSemester");
+
+      const detail =
+        document.getElementById("semesterMateriDetail");
+
+      if (!materi || !detail) {
+        return;
+      }
+
+      resetResult();
+
+      /*
+        SEMESTER → BELUM GENAP → JUZ 30
+      */
+
+      if (materi.value === "30") {
+        detail.innerHTML = `
+          ${fieldHtml({
+            id: "kesalahan",
+            label: "Ada berapa kesalahan?",
+            min: "0",
+            step: "1",
+            placeholder: "Contoh: 5"
+          })}
+
+          ${fieldHtml({
+            id: "halaman",
+            label: "Berapa halaman yang disetor?",
+            min: "0.01",
+            step: "0.01",
+            placeholder: "Contoh: 12",
+            note:
+              "Angka 23 halaman otomatis digunakan dalam perhitungan."
+          })}
+        `;
+
+        return;
+      }
+
+      /*
+        SEMESTER → BELUM GENAP → SELAIN JUZ 30
+      */
+
+      if (materi.value === "selain30") {
+        detail.innerHTML = `
+          ${fieldHtml({
+            id: "kesalahan",
+            label: "Ada berapa kesalahan?",
+            min: "0",
+            step: "1",
+            placeholder: "Contoh: 5"
+          })}
+
+          ${fieldHtml({
+            id: "halaman",
+            label: "Berapa halaman yang disetor?",
+            min: "0.01",
+            step: "0.01",
+            placeholder: "Contoh: 12",
+            note:
+              "Angka 20 halaman otomatis digunakan dalam perhitungan."
+          })}
+        `;
+      }
+    }
+
+    /*
+      ==========================================
+      VALIDASI
+      ==========================================
+    */
+
+    function validateCommon(
+      nama,
+      kesalahan
+    ) {
+      if (!nama) {
+        alert("Nama santriwati belum diisi.");
+        els.nama.focus();
+        return false;
+      }
+
+      if (
+        !Number.isFinite(kesalahan) ||
+        kesalahan < 0
+      ) {
+        alert(
+          "Jumlah kesalahan belum diisi dengan benar."
+        );
+
+        document
+          .getElementById("kesalahan")
+          ?.focus();
+
+        return false;
+      }
+
+      return true;
+    }
+
+    /*
+      ==========================================
+      HITUNG BULANAN
+      ==========================================
+    */
+
+    function hitungBulanan() {
+      const materi =
+        document.getElementById(
+          "materiBulanan"
+        )?.value;
+
+      const nama =
+        els.nama.value.trim();
+
+      const kesalahan =
+        getNumber("kesalahan");
+
+      if (!materi) {
+        alert(
+          "Silakan pilih materi ujian terlebih dahulu."
+        );
+
+        document
+          .getElementById("materiBulanan")
+          ?.focus();
+
+        return;
+      }
+
+      if (
+        !validateCommon(
+          nama,
+          kesalahan
+        )
+      ) {
+        return;
+      }
+
+      let nilai;
+      let bobot;
+      let halaman = null;
+      let jumlahJuz = null;
+      let rumus = "";
+
+      /*
+        BULANAN → JUZ 30
+
+        Nilai:
+        100 - ((kesalahan × 2 × 23) ÷ halaman)
+
+        Bobot:
+        nilai × (halaman ÷ 23)
+      */
+
+      if (materi === "30") {
+        halaman =
+          getNumber("halaman");
+
+        if (
+          !Number.isFinite(halaman) ||
+          halaman <= 0
+        ) {
+          alert(
+            "Jumlah halaman disetor harus lebih dari 0."
+          );
+
+          document
+            .getElementById("halaman")
+            ?.focus();
+
+          return;
+        }
+
+        const totalHalaman = 23;
+
+        nilai =
+          100 -
+          (
+            kesalahan *
+            2 *
+            totalHalaman
+          ) /
+            halaman;
+
+        bobot =
+          nilai *
+          (
+            halaman /
+            totalHalaman
+          );
+
+        rumus = `
+          <div class="formula-title">
+            Nilai Ujian Per Juz
+          </div>
+
+          <div>
+            = 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})
+          </div>
+
+          <div>
+            = 100 - (${angka(kesalahan * 2 * totalHalaman)} ÷ ${angka(halaman)})
+          </div>
+
+          <div class="formula-result">
+            = ${fmt(nilai)}
+          </div>
+
+          <div class="formula-title">
+            Bobot Nilai
+          </div>
+
+          <div>
+            = ${fmt(nilai)} × (${angka(halaman)} ÷ 23)
+          </div>
+
+          <div class="formula-result">
+            = ${fmt(bobot)}
+          </div>
+        `;
+      }
+
+      /*
+        BULANAN → LEBIH DARI 1 JUZ
+
+        Nilai:
+        100 - (kesalahan × 2)
+
+        Bobot:
+        nilai × jumlah juz
+      */
+
+      else {
+        jumlahJuz =
+          getNumber("jumlahJuz");
+
+        if (
+          !Number.isInteger(jumlahJuz) ||
+          jumlahJuz < 1 ||
+          jumlahJuz > 5
+        ) {
+          alert(
+            "Jumlah juz yang diujikan harus 1 sampai 5 juz."
+          );
+
+          document
+            .getElementById("jumlahJuz")
+            ?.focus();
+
+          return;
+        }
+
+        nilai =
+          100 -
+          kesalahan * 2;
+
+        bobot =
+          nilai *
+          jumlahJuz;
+
+        rumus = `
+          <div class="formula-title">
+            Nilai Ujian Bulanan
+          </div>
+
+          <div>
+            = 100 - (${angka(kesalahan)} × 2)
+          </div>
+
+          <div class="formula-result">
+            = ${fmt(nilai)}
+          </div>
+
+          <div class="formula-title">
+            Bobot Nilai
+          </div>
+
+          <div>
+            = ${fmt(nilai)} × ${angka(jumlahJuz)}
+          </div>
+
+          <div class="formula-result">
+            = ${fmt(bobot)}
+          </div>
+        `;
+      }
+
+      tampilkanHasil({
+        labelNilai:
+          materi === "30"
+            ? "Nilai Ujian Per Juz"
+            : "Nilai Ujian Bulanan",
+
+        nilai,
+        bobot,
+        rumus
+      });
+
+      simpanRiwayat({
+        id: createId(),
+        waktu:
+          new Date().toLocaleString(
+            "id-ID"
+          ),
+        nama,
+        ujian: "Ujian Bulanan",
+        materi:
+          materi === "30"
+            ? "Juz 30"
+            : "Lebih dari 1 Juz",
+        kesalahan,
+        halaman,
+        jumlahJuz,
+        nilai,
+        bobot
+      });
+    }
+
+    /*
+      ==========================================
+      HITUNG SEMESTER
+      ==========================================
+    */
+
+    function hitungSemester() {
+      const kondisi =
+        document.getElementById(
+          "semesterGenap"
+        )?.value;
+
+      const nama =
+        els.nama.value.trim();
+
+      const kesalahan =
+        getNumber("kesalahan");
+
+      if (!kondisi) {
+        alert(
+          "Silakan pilih apakah materi sudah genap 1 juz."
+        );
+
+        document
+          .getElementById("semesterGenap")
+          ?.focus();
+
+        return;
+      }
+
+      if (
+        !validateCommon(
+          nama,
+          kesalahan
+        )
+      ) {
+        return;
+      }
+
+      let nilai;
+      let halaman = null;
+      let materiRiwayat;
+      let rumus = "";
+
+      /*
+        SEMESTER → GENAP 1 JUZ
+
+        100 - (kesalahan × 2)
+      */
+
+      if (kondisi === "genap") {
+        nilai =
+          100 -
+          kesalahan * 2;
+
+        materiRiwayat =
+          "Genap 1 Juz";
+
+        rumus = `
+          <div class="formula-title">
+            Nilai Ujian Per Juz
+          </div>
+
+          <div>
+            = 100 - (${angka(kesalahan)} × 2)
+          </div>
+
+          <div class="formula-result">
+            = ${fmt(nilai)}
+          </div>
+        `;
+      }
+
+      /*
+        SEMESTER → BELUM GENAP
+      */
+
+      else {
+        const materi =
+          document.getElementById(
+            "materiSemester"
+          )?.value;
+
+        if (!materi) {
+          alert(
+            "Silakan pilih materi terlebih dahulu."
+          );
+
+          document
+            .getElementById("materiSemester")
+            ?.focus();
+
+          return;
+        }
+
+        halaman =
+          getNumber("halaman");
+
+        if (
+          !Number.isFinite(halaman) ||
+          halaman <= 0
+        ) {
+          alert(
+            "Jumlah halaman disetor harus lebih dari 0."
+          );
+
+          document
+            .getElementById("halaman")
+            ?.focus();
+
+          return;
+        }
+
+        /*
+          SEMESTER → BELUM GENAP → JUZ 30
+
+          100 - ((kesalahan × 2 × 23) ÷ halaman)
+        */
+
+        if (materi === "30") {
+          const totalHalaman = 23;
+
+          nilai =
+            100 -
+            (
+              kesalahan *
+              2 *
+              totalHalaman
+            ) /
+              halaman;
+
+          materiRiwayat =
+            "Belum Genap 1 Juz — Juz 30";
+
+          rumus = `
+            <div class="formula-title">
+              Nilai Ujian Per Juz
+            </div>
+
+            <div>
+              = 100 - ((${angka(kesalahan)} × 2 × 23) ÷ ${angka(halaman)})
+            </div>
+
+            <div>
+              = 100 - (${angka(kesalahan * 2 * totalHalaman)} ÷ ${angka(halaman)})
+            </div>
+
+            <div class="formula-result">
+              = ${fmt(nilai)}
+            </div>
+          `;
+        }
+
+        /*
+          SEMESTER → BELUM GENAP → SELAIN JUZ 30
+
+          100 - ((kesalahan × 2 × 20) ÷ halaman)
+        */
+
+        else {
+          const totalHalaman = 20;
+
+          nilai =
+            100 -
+            (
+              kesalahan *
+              2 *
+              totalHalaman
+            ) /
+              halaman;
+
+          materiRiwayat =
+            "Belum Genap 1 Juz — Selain Juz 30";
+
+          rumus = `
+            <div class="formula-title">
+              Nilai Ujian Per Juz
+            </div>
+
+            <div>
+              = 100 - ((${angka(kesalahan)} × 2 × 20) ÷ ${angka(halaman)})
+            </div>
+
+            <div>
+              = 100 - (${angka(kesalahan * 2 * totalHalaman)} ÷ ${angka(halaman)})
+            </div>
+
+            <div class="formula-result">
+              = ${fmt(nilai)}
+            </div>
+          `;
+        }
+      }
+
+      /*
+        SEMESTER TIDAK MENGHITUNG BOBOT
+      */
+
+      tampilkanHasil({
+        labelNilai:
+          "Nilai Ujian Per Juz",
+        nilai,
+        bobot: null,
+        rumus
+      });
+
+      simpanRiwayat({
+        id: createId(),
+        waktu:
+          new Date().toLocaleString(
+            "id-ID"
+          ),
+        nama,
+        ujian: "Ujian Semester",
+        materi: materiRiwayat,
+        kesalahan,
+        halaman,
+        jumlahJuz: null,
+        nilai,
+        bobot: null
+      });
+    }
+
+    /*
+      ==========================================
+      TOMBOL HITUNG
+      ==========================================
+    */
+
+    function hitung() {
+      const jenis =
+        els.jenis.value;
+
+      if (jenis === "bulanan") {
+        hitungBulanan();
+        return;
+      }
+
+      if (jenis === "semester") {
+        hitungSemester();
+        return;
+      }
+
+      alert(
+        "Silakan pilih jenis ujian terlebih dahulu."
+      );
+
+      els.jenis.focus();
+    }
+
+    /*
+      ==========================================
+      RIWAYAT
+      ==========================================
+    */
+
+    function createId() {
+      return (
+        Date.now() +
+        "-" +
+        Math.random()
+          .toString(36)
+          .slice(2, 9)
+      );
+    }
+
+    function ambilRiwayat() {
+      try {
+        const data =
+          JSON.parse(
+            localStorage.getItem(
+              STORAGE_KEY
+            )
+          );
+
+        return Array.isArray(data)
+          ? data
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function simpanRiwayat(data) {
+      const riwayat =
+        ambilRiwayat();
+
+      riwayat.unshift(data);
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+          riwayat.slice(0, 200)
+        )
+      );
+
+      tampilkanRiwayat();
+    }
+
+    /*
+      Membawa riwayat dari HTML lama
+      supaya upgrade tidak menghilangkan
+      data yang sudah ada di perangkat.
+    */
+
+    function migrasiRiwayatLama() {
+      if (
+        localStorage.getItem(
+          STORAGE_KEY
+        )
+      ) {
+        return;
+      }
+
+      try {
+        const oldData =
+          JSON.parse(
+            localStorage.getItem(
+              OLD_STORAGE_KEY
+            )
+          );
+
+        if (
+          !Array.isArray(oldData) ||
+          oldData.length === 0
+        ) {
+          return;
+        }
+
+        const migrated =
+          oldData.map(item => ({
+            id:
+              item.id ||
+              createId(),
+
+            waktu:
+              item.waktu ||
+              "-",
+
+            nama:
+              item.nama ||
+              "-",
+
+            ujian:
+              "Ujian Bulanan",
+
+            materi:
+              item.jenis ||
+              "-",
+
+            kesalahan:
+              Number(
+                item.kesalahan
+              ) || 0,
+
+            halaman:
+              item.halaman ??
+              null,
+
+            jumlahJuz:
+              item.jumlahJuz ??
+              null,
+
+            nilai:
+              Number(
+                item.nilai
+              ) || 0,
+
+            bobot:
+              Number.isFinite(
+                Number(item.bobot)
+              )
+                ? Number(item.bobot)
+                : null
+          }));
+
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(
+            migrated
+          )
+        );
+      } catch {
+        /*
+          Jika data lama tidak dapat dibaca,
+          aplikasi tetap berjalan normal.
+        */
+      }
+    }
+
+    function tampilkanRiwayat() {
+      const riwayat =
+        ambilRiwayat();
+
+      if (!riwayat.length) {
+        els.history.innerHTML = `
+          <div class="empty">
+            Belum ada riwayat.
+            Hasil perhitungan nanti akan muncul di sini.
+          </div>
+        `;
+
+        return;
+      }
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Ujian</th>
+              <th>Materi</th>
+              <th>Kesalahan</th>
+              <th>Hlm</th>
+              <th>Juz</th>
+              <th>Nilai</th>
+              <th>Bobot</th>
+              <th>Waktu</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+      `;
+
+            for (const item of riwayat) {
+        const bobotText =
+          Number.isFinite(
+            Number(item.bobot)
+          )
+            ? fmt(item.bobot)
+            : "-";
+
+        html += `
+          <tr>
+            <td>
+              ${escapeHtml(
+                item.nama
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                item.ujian ||
+                "-"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                item.materi ||
+                "-"
+              )}
+            </td>
+
+            <td>
+              ${angka(
+                item.kesalahan ??
+                0
+              )}
+            </td>
+
+            <td>
+              ${
+                item.halaman !==
+                  null &&
+                item.halaman !==
+                  undefined
+                  ? angka(
+                      item.halaman
+                    )
+                  : "-"
+              }
+            </td>
+
+            <td>
+              ${
+                item.jumlahJuz !==
+                  null &&
+                item.jumlahJuz !==
+                  undefined
+                  ? angka(
+                      item.jumlahJuz
+                    )
+                  : "-"
+              }
+            </td>
+
+            <td>
+              ${fmt(item.nilai)}
+            </td>
+
+            <td>
+              ${bobotText}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                item.waktu ||
+                "-"
+              )}
+            </td>
+
+            <td>
+              <button
+                class="delete-btn"
+                type="button"
+                data-delete-id="${escapeHtml(item.id)}"
+                aria-label="Hapus riwayat"
+                title="Hapus"
+              >
+                ×
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      els.history.innerHTML =
+        html;
+    }
+
+    function hapusRiwayat(id) {
+      const riwayat =
+        ambilRiwayat()
+          .filter(
+            item =>
+              String(item.id) !==
+              String(id)
+          );
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+          riwayat
+        )
+      );
+
+      tampilkanRiwayat();
+    }
+
+    function hapusSemuaRiwayat() {
+      const riwayat =
+        ambilRiwayat();
+
+      if (!riwayat.length) {
+        return;
+      }
+
+      const yakin =
+        confirm(
+          "Hapus semua riwayat perhitungan?"
+        );
+
+      if (!yakin) {
+        return;
+      }
+
+      localStorage.removeItem(
+        STORAGE_KEY
+      );
+
+      tampilkanRiwayat();
+    }
+
+    /*
+
+    
+      ==========================================
+      TEKS PENYEMANGAT
+      ==========================================
+    */
+
+    function renderEncouragement(
+      index,
+      animate = false
+    ) {
+      const item =
+        encouragements[index];
+
+      const target =
+        els.encouragementText;
+
+      if (animate) {
+        target.classList.remove(
+          "fade-in"
+        );
+
+        target.classList.add(
+          "fade-out"
+        );
+
+        window.setTimeout(
+          () => {
+            setEncouragementContent(
+              item
+            );
+
+            target.classList.remove(
+              "fade-out"
+            );
+
+            target.classList.add(
+              "fade-in"
+            );
+          },
+          800
+        );
+
+        return;
+      }
+
+      setEncouragementContent(
+        item
+      );
+    }
+
+    function setEncouragementContent(item) {
+  els.encouragementText.className =
+    `encouragement-text ${item.direction}`;
+
+  /*
+    Teks + emoji sengaja dibuat sebagai satu
+    inline content.
+
+    Hasilnya:
+    "Semoga ini menjadi amal yang terus mengalir
+     hingga anak² dewasa, aamiin. 🌸"
+
+    Kalau kalimat turun baris, emoji tetap
+    mengikuti ujung kalimat dan tidak terpisah.
+  */
+  els.encouragementText.innerHTML = `
+    <span class="encouragement-message">
+      ${escapeHtml(item.text)}
+      <span
+        class="encouragement-emoji"
+        aria-hidden="true"
+      >${item.emoji}</span>
+    </span>
   `;
+    }
 
-  riwayat.forEach(item => {
-    html += `
-      <tr>
-        <td>${escapeHtml(item.nama)}</td>
-        <td>${item.jenis}</td>
-        <td>${item.kesalahan}</td>
-        <td>${item.halaman ?? "-"}</td>
-        <td>${item.jumlahJuz ?? "-"}</td>
-        <td>${fmt(item.nilai)}</td>
-        <td>${fmt(item.bobot)}</td>
-        <td>${escapeHtml(item.waktu)}</td>
-        <td><button class="delete-btn" onclick="hapusRiwayat(${item.id})">×</button></td>
-      </tr>
-    `;
-  });
+    function mulaiPesanPenyemangat() {
+      if (
+        state.encouragementTimer
+      ) {
+        clearInterval(
+          state.encouragementTimer
+        );
+      }
 
-  html += "</tbody></table>";
-  el.innerHTML = html;
-}
+      state.encouragementIndex = 0;
 
-function hapusRiwayat(id) {
-  const riwayat = ambilRiwayat().filter(item => item.id !== id);
-  localStorage.setItem(KEY, JSON.stringify(riwayat));
-  tampilkanRiwayat();
-}
+      renderEncouragement(
+        0,
+        false
+      );
 
-function hapusSemuaRiwayat() {
-  if (!ambilRiwayat().length) return;
+      /*
+        Timing:
+        ±10 detik tampil
+        0,8 detik fade out
+        ganti teks
+        0,8 detik fade in
 
-  if (confirm("Hapus semua riwayat?")) {
-    localStorage.removeItem(KEY);
+        Pergantian dimulai sekitar
+        setiap 11,6 detik.
+      */
+
+      state.encouragementTimer =
+        window.setInterval(
+          () => {
+            state.encouragementIndex =
+              (
+                state.encouragementIndex +
+                1
+              ) %
+              encouragements.length;
+
+            renderEncouragement(
+              state.encouragementIndex,
+              true
+            );
+          },
+          11600
+        );
+    }
+
+    /*
+
+     ==========================================
+      EVENT
+      ==========================================
+    */
+
+    els.jenis.addEventListener(
+      "change",
+      renderForm
+    );
+
+    els.hitungBtn.addEventListener(
+      "click",
+      hitung
+    );
+
+    els.hapusSemuaBtn.addEventListener(
+      "click",
+      hapusSemuaRiwayat
+    );
+
+    els.history.addEventListener(
+      "click",
+      event => {
+        const button =
+          event.target.closest(
+            "[data-delete-id]"
+          );
+
+        if (!button) {
+          return;
+        }
+
+        hapusRiwayat(
+          button.dataset.deleteId
+        );
+      }
+    );
+
+    els.nama.addEventListener(
+      "keydown",
+      event => {
+        if (
+          event.key === "Enter"
+        ) {
+          event.preventDefault();
+          els.jenis.focus();
+        }
+      }
+    );
+
+    /*
+
+     ==========================================
+      INITIALIZATION
+      ==========================================
+    */
+
+    migrasiRiwayatLama();
     tampilkanRiwayat();
-  }
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-ubahJenis();
-tampilkanRiwayat();
-</script>
+    mulaiPesanPenyemangat();
+  </script>
 
 </body>
 </html>

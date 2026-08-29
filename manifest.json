@@ -1,0 +1,12 @@
+{
+  "name": "Kalkulator Nilai Ujian Hifzh",
+  "short_name": "Kalkulator Hifzh",
+  "description": "Kalkulator nilai ujian Hifzh untuk ujian bulanan dan semester.",
+  "lang": "id-ID",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f5f1",
+  "theme_color": "#718c78"
+}
